@@ -164,6 +164,6 @@ web_app "wordpress" do
 end
 
 execute "sync with #{node['site']['url']} Database" do
-  proto_reg Regexp.escape( node['site']['proto'] ) 
+  proto_reg = Regexp.escape( node['site']['proto'] ) 
   command "wget -qO- #{node['site']['proto']}#{node['site']['url']}/?sql_dump | sed 's/#{proto_reg}#{node['site']['url']}/#{proto_reg}#{node['site']['dev_url']}/g' | mysql"
 end
