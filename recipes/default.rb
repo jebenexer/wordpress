@@ -140,8 +140,11 @@ template "#{node['wordpress']['dir']}/wp-config.php" do
   notifies :write, "log[Navigate to 'http://#{server_fqdn}/wp-admin/install.php' to complete wordpress installation]"
 end
 
-template "#{node['user_home']}/.my.cnf" do
+template "/home/#{node['user']}/.my.cnf" do
   source ".my.cnf.erb"
+  owner node['user']
+  group node['user']
+  mode "0644"
   variables(
     :database        => node['wordpress']['db']['database'],
     :user            => node['wordpress']['db']['user'],
