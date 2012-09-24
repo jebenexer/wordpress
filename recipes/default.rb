@@ -152,6 +152,18 @@ template "/home/#{node['user']}/.my.cnf" do
   )
 end
 
+template "/root/.my.cnf" do
+  source ".my.cnf.erb"
+  owner node['user']
+  group node['user']
+  mode "0644"
+  variables(
+    :database        => node['wordpress']['db']['database'],
+    :user            => node['wordpress']['db']['user'],
+    :password        => node['wordpress']['db']['password']
+  )
+end
+
 apache_site "000-default" do
   enable false
 end
@@ -164,6 +176,6 @@ web_app "wordpress" do
 end
 
 execute "sync with #{node['site']['url']} Database" do
-  proto_reg = Regexp.escape( node['site']['proto'] ) 
-  command "wget -qO- #{node['site']['proto']}#{node['site']['url']}/?sql_dump | sed 's/#{proto_reg}#{node['site']['url']}/#{proto_reg}#{node['site']['dev_url']}/g' | mysql"
+  proto_reg = Regexp.quote( node['site']['proto'] ) 
+  command "wget -qO- #{node['site']['proto']}#{node['site']['url']}/?sql_dump | sed 's\##{proto_reg}#{node['site']['url']}\##{proto_reg}#{node['site']['dev_url']}\#g' | mysql"
 end
